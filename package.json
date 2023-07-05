@@ -1,0 +1,10 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "dependencies": {
+    "@discordjs/core": "^0.6.0",
+    "@discordjs/rest": "^1.7.1",
+    "@discordjs/ws": "^0.8.3",
+    "discord.js": "^14.11.0"
+  }
+}
