@@ -1,5 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -34,9 +36,14 @@ module.exports = {
                 replyMessage += `${i + 1}. ${nick} - ${bidamount}\n`;
             }
 
+            const embed = new EmbedBuilder()
+                .setColor('#0099ff')
+                .setTitle('Bids leaderboard ' + choice.toUpperCase())
+                .setDescription(replyMessage)
             return interaction.reply({
-                content: replyMessage,
-                ephemeral: false
+                embeds: [embed],
+                // content: replyMessage,
+                // ephemeral: false
             });
         });
     },

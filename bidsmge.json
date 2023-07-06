@@ -1,1 +1,12 @@
-[]
+[
+    {
+        "nick": "Otter",
+        "rokid": 2221,
+        "bidamount": 24
+    },
+    {
+        "nick": "Fox",
+        "rokid": 1234342345,
+        "bidamount": 10.5
+    }
+]

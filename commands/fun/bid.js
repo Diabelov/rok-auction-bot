@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const fs = require('fs');
+const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -7,10 +8,10 @@ module.exports = {
         .setDescription('Place your bid')
         .addStringOption(option => option.setName('event').setDescription('Select which event to choose').setRequired(true).addChoices(
             {name: '20GH', value: '20gh'},
-            {name: 'MGE', value: 'mge'}
+            {name: 'MGE', value: 'mge'},
         ))
         .addIntegerOption(option => option.setName('rokid').setDescription('Your ROK ID.').setRequired(true))
-        .addNumberOption(option => option.setName('bidamount2').setDescription('Amount of your bid.').setRequired(true)),
+        .addNumberOption(option => option.setName('bidamount2').setDescription('Amount of your bid (i.e. 2.1 not 2,1 DO NOT USE A COMMA).').setRequired(true)),
     async execute(interaction) {
         const rokid = interaction.options.getInteger('rokid');
         const bidamount2 = interaction.options.getNumber('bidamount2');
@@ -75,10 +76,23 @@ module.exports = {
                     console.log('Bids saved successfully');
                 });
 
+                let replyMessage = 'Current highest bids:\n';
+
+                for (let i = 0; i < bids.length; i++) {
+                    const {nick, bidamount} = bids[i];
+                    replyMessage += `${i + 1}. ${nick} - ${bidamount}\n`;
+                }
+
+                const embed = new EmbedBuilder()
+                    .setColor('#0099ff')
+                    .setTitle('Bids leaderboard ' + choice)
+                    .setDescription(replyMessage)
+
                 return interaction.reply({
-                    content: `\`${rokid}\` has successfully bid \`${bidamount2}\`, your hidden nick is \`${randomAnimal}\` for the \`${choice.toUpperCase()}\` event`,
-                    ephemeral: true
-                });
+                    content: `\`${rokid}\` has successfully bid \`${bidamount2}\`, your hidden nick is \`${randomAnimal}\` for the \`${choice.toUpperCase()}\` event`, // toUpperCase() doesn't work for MGE
+                    ephemeral: true,
+                    embeds: [embed]
+                })
             });
         });
     },
