@@ -4,9 +4,16 @@ const fs = require('fs');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('bids')
-        .setDescription('See bids leaderboard'),
+        .setDescription('See bids leaderboard')
+        .addStringOption(option => option.setName('event').setDescription('Select which event to choose').setRequired(true).addChoices(
+            {name: '20GH', value: '20gh'},
+            {name: 'MGE', value: 'mge'}
+        )),
     async execute(interaction) {
-        fs.readFile('bids.json', 'utf8', (err, data) => {
+        const choice = interaction.options.getString('event')
+        const filename = `bids${choice}.json`
+
+        fs.readFile(filename, 'utf8', (err, data) => {
             if (err) {
                 console.error(err);
                 return interaction.reply({ content: 'Error reading bids data', ephemeral: true });
@@ -20,14 +27,11 @@ module.exports = {
             // Sort the bids by bidamount in descending order
             bids.sort((a, b) => b.bidamount - a.bidamount);
 
-            // Extract the top 3 highest bidders
-            const topBidders = bids.slice(0, 3);
-
             let replyMessage = 'Current highest bids:\n';
 
-            for (let i = 0; i < topBidders.length; i++) {
-                const { nick, rokid, bidamount } = topBidders[i];
-                replyMessage += `${i + 1}. ${nick} (ROK ID: ${rokid}) - ${bidamount}\n`;
+            for (let i = 0; i < bids.length; i++) {
+                const { nick, bidamount } = bids[i];
+                replyMessage += `${i + 1}. ${nick} - ${bidamount}\n`;
             }
 
             return interaction.reply({

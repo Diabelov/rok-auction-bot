@@ -4,12 +4,17 @@ const fs = require('fs');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('bidsadmin')
-        .setDescription('See bids leaderboard'),
-
-
-
+        .setDescription('See bids leaderboard')
+        .addStringOption(option => option.setName('event').setDescription('Select which event to choose').setRequired(true).addChoices(
+            {name: '20GH', value: '20gh'},
+            {name: 'MGE', value: 'mge'}
+        )),
     async execute(interaction) {
-        fs.readFile('bids.json', 'utf8', (err, data) => {
+        const choice = interaction.options.getString('event');
+
+        const filename = `bids${choice}.json`
+
+        fs.readFile(filename, 'utf8', (err, data) => {
             if (err) {
                 console.error(err);
                 return interaction.reply({ content: 'Error reading bids data', ephemeral: true });
@@ -30,10 +35,18 @@ module.exports = {
                 replyMessage += `${i + 1}. ${nick} (ROK ID: ${rokid}) - ${bidamount}\n`;
             }
 
-            return interaction.reply({
-                content: replyMessage,
-                ephemeral: true
-            });
+            if(interaction.member.roles.cache.find(r => r.name === "Kingdom Management")) {
+
+
+                return interaction.reply({
+                    content: replyMessage,
+                    ephemeral: true
+                });
+            } else
+                return interaction.reply({
+                    content: "You don't have the permission to use this command",
+                    ephemeral: true
+                })
         });
     },
 };
